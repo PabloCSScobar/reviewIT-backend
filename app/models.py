@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 #profil uzytkownika bazujacy da wbudowanym modelu User
 class Profile(models.Model):
@@ -22,17 +23,59 @@ class Category(models.Model):
         return self.name
 
 
+
+class Post(models.Model):
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="created_posts")
+    created = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+    description = models.TextField()
+    title = models.CharField(max_length=255)
+    repo_link = models.CharField(max_length=255)
+    page_link = models.CharField(max_length=255)
+    has_top_answer = models.BooleanField(default=False)
+    categories = models.ManyToManyField(Category)
+
+    #zwraca liczbe udzielonych odzpowiedzi w danym poście
+    def get_answer_count(self):
+        return self.answers.count()
+
+    #zwraca ostatnią dodana odpowiedz lub null jesli nie ma jeszcze żadnych odpowiedzi
+    def get_last_activity(self):
+        try:
+            answer = self.answers.latest('id')
+        except ObjectDoesNotExist:
+            answer = None
+        return answer
+
+
+    def __str__(self):
+        return self.title
+    
+
+
+#udzielona odpowiedz
+class Answer(models.Model):
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="provided_answers")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="answers")
+    created = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+    is_top_answer =  models.BooleanField()
+    description = models.TextField()
+
+
 #oceniona kategoria w odpowiedzi (Answer)
 class AnswerCategory(models.Model):
     class Meta:
         verbose_name_plural = "Answer Categories"
 
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="reviewed_categories")
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="answer_categories")
     rank = models.IntegerField()
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name="reviewed_categories")
+
+
     def __str__(self):
         return self.category.name
     
-
 #pojedynczy element ocenionej kategorii (wada lub zaleta)
 class AnswerCategoryNode(models.Model):
     class Meta:
@@ -48,25 +91,3 @@ class AnswerCategoryNode(models.Model):
 
     def __str__(self):
         return self.answer_type + ': ' + self.description
-
-
-class Post(models.Model):
-    author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="created_posts")
-    created = models.DateTimeField(auto_now=False, auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True, auto_now_add=False)
-    description = models.TextField()
-    title = models.CharField(max_length=255)
-    repo_link = models.CharField(max_length=255)
-    page_link = models.CharField(max_length=255)
-    has_top_answer = models.BooleanField(default=False)
-
-
-
-#udzielona odpowiedz
-class Answer(models.Model):
-    author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="provided_answers")
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="answers")
-    created = models.DateTimeField(auto_now=False, auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True, auto_now_add=False)
-    is_top_answer =  models.BooleanField()
-    description = models.TextField()
