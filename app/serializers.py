@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import *
 
+
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -27,6 +29,14 @@ class AnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = ['id', 'author', 'created', 'is_top_answer', 'description', 'reviewed_categories']
 
+
+class LastActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ['author', 'created']
+
+
+
 #obiekt posta wraz z informacja o odpowiedziach
 class PostDetailSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True)
@@ -41,7 +51,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True)
     answers = serializers.IntegerField(source="get_answer_count")
-    last_activity = AnswerSerializer(source="get_last_activity")
+    last_activity = LastActivitySerializer(source="get_last_activity")
     
     class Meta:
         model = Post
