@@ -28,6 +28,7 @@ class Post(models.Model):
     author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="created_posts")
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+    visits = models.PositiveIntegerField(default=0)
     description = models.TextField()
     title = models.CharField(max_length=255)
     repo_link = models.CharField(max_length=255)

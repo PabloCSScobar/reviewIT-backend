@@ -44,7 +44,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['author', 'created', 'description', 'title', 'repo_link', 'page_link', 'has_top_answer', 'categories', 'answers']
+        fields = ['visits', 'author', 'created', 'description', 'title', 'repo_link', 'page_link', 'has_top_answer', 'categories', 'answers']
 
 
 #obiekt posta bez dodatkowych informacji
@@ -55,5 +55,5 @@ class PostSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        fields = ['last_activity', 'author', 'created', 'description', 'title', 'repo_link', 'page_link', 'has_top_answer', 'categories', 'answers']
+        fields = ['visits', 'last_activity', 'author', 'created', 'description', 'title', 'repo_link', 'page_link', 'has_top_answer', 'categories', 'answers']
 
