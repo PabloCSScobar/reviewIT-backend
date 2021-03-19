@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Avg
 
 #profil uzytkownika bazujacy da wbudowanym modelu User
 class Profile(models.Model):
@@ -21,7 +22,6 @@ class Category(models.Model):
     name = models.CharField(max_length=50)
     def __str__(self):
         return self.name
-
 
 
 class Post(models.Model):
@@ -62,6 +62,10 @@ class Answer(models.Model):
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     is_top_answer =  models.BooleanField()
     description = models.TextField()
+
+
+    def get_answer_rank(self):
+        return self.reviewed_categories.all().aggregate(Avg('rank'))['rank__avg']
 
 
 #oceniona kategoria w odpowiedzi (Answer)
