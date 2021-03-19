@@ -2,7 +2,11 @@ from rest_framework import serializers
 from .models import *
 
 
-
+class ProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username')
+    class Meta:
+        model = Profile
+        fields = ['id', 'username', 'reputation']
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
