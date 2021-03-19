@@ -72,6 +72,8 @@ class AnswerCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="answer_categories")
     rank = models.IntegerField()
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name="reviewed_categories")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="reviewed_categories")
+
 
 
     def __str__(self):
