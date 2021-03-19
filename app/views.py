@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .serializers import *
 from .models import *
 from rest_framework import viewsets, status
-
+from rest_framework.response import Response
 
 class CategoryView(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -26,4 +26,11 @@ class PostView(viewsets.ModelViewSet):
             return PostSerializer
         else:
             return PostDetailSerializer
-
+            
+    #customowa funkcja retrieve zwiększająca ilość wizyt posta po każdym zapytaniu
+    def retrieve(self, request, *args, **kwargs):
+        post = self.get_object()
+        post.visits +=1
+        post.save()
+        serializer = self.get_serializer(post)
+        return Response(serializer.data)
