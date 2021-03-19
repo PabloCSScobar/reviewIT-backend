@@ -67,13 +67,16 @@ class Answer(models.Model):
     def get_answer_rank(self):
         return self.reviewed_categories.all().aggregate(Avg('rank'))['rank__avg']
 
+    def __str__(self):
+        return str(self.id) + ' ' + self.author.user.username + ': ' + self.post.title
+    
 
 #oceniona kategoria w odpowiedzi (Answer)
 class AnswerCategory(models.Model):
     class Meta:
         verbose_name_plural = "Answer Categories"
 
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="answer_categories")
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="reviewed_categories")
     rank = models.IntegerField()
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name="reviewed_categories")
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="reviewed_categories")
