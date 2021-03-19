@@ -20,9 +20,9 @@ class Category(models.Model):
         verbose_name_plural = "categories"
     
     name = models.CharField(max_length=50)
+
     def __str__(self):
         return self.name
-
 
 class Post(models.Model):
     author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="created_posts")
@@ -48,6 +48,9 @@ class Post(models.Model):
             answer = None
         return answer
 
+    #zwraca średnią ocenę dla każdej zrecenzowanej kategorii w poście
+    def get_categories_rank(self):
+        categories = self.reviewed_categories.values('category').annotate(avg=Avg('rank')).order_by('-avg')
 
     def __str__(self):
         return self.title
