@@ -128,7 +128,7 @@ class CreateNewPostTest(APITestCase):
             }
         ]
     
-    def test_create_valid_post(self):
+    def test_valid_create_post(self):
         response = client.post(
             '/api/posts/',
             content_type='application/json',
@@ -136,7 +136,7 @@ class CreateNewPostTest(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_create_invalid_post(self):
+    def test_invalid_create_post(self):
         for payload in self.invalid_payloads:
             response = client.post(
                 '/api/posts/',
@@ -160,11 +160,12 @@ class DeletePostTest(APITestCase):
             has_top_answer=False)
         self.post.categories.set(categories)
 
-    def test_delete_valid_post(self):
+    def test_valid_delete_post(self):
         response = client.delete(f'/api/posts/{self.post.pk}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
 
-    def test_delete_invalid_post(self):
+    def test_invalid_delete_post(self):
         response = client.delete(f'/api/posts/{10000000}/')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
