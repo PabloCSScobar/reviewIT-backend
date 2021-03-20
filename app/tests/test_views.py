@@ -16,22 +16,20 @@ class GetAllPostsTest(APITestCase):
         categories = Category.objects.all()
         post = Post.objects.create(
             author=profile,
-            visits=0,
             description='Test post description',
             title='Test post',
             repo_link='http://www.google.com',
-            page_link='http://www.google.com',
-            has_top_answer=False)
+            page_link='http://www.google.com'
+        )
         post.categories.set(categories)
 
         post2 = Post.objects.create(
             author=profile,
-            visits=0,
             description='Test post description2',
             title='Test post2',
             repo_link='http://www.google.com',
-            page_link='http://www.google.com',
-            has_top_answer=False)
+            page_link='http://www.google.com'
+        )
         post2.categories.set(categories)
 
     def test_get_all_posts(self):
@@ -48,12 +46,11 @@ class GetSinglePostTest(APITestCase):
         categories = Category.objects.all()
         self.post = Post.objects.create(
             author=profile,
-            visits=0,
             description='Test post description',
             title='Test post',
             repo_link='http://www.google.com',
-            page_link='http://www.google.com',
-            has_top_answer=False)
+            page_link='http://www.google.com'
+        )
         self.post.categories.set(categories)
     
     def test_get_valid_single_post(self):
