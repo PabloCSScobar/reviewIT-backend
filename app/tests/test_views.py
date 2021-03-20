@@ -76,7 +76,6 @@ class CreateNewPostTest(APITestCase):
         category = Category.objects.create(name="SEO")
         self.valid_payload = {
             "author": profile.pk,
-            "visits": 0,
             "description": "Test post description",
             "title": "Test post",
             "repo_link": "http://www.google.com",
@@ -84,6 +83,53 @@ class CreateNewPostTest(APITestCase):
             "has_top_answer": False,
             "categories": [category.pk]
         }
+        self.invalid_payloads = [
+            {
+                "author": None,
+                "description": "Test post description",
+                "title": "Test post",
+                "repo_link": "http://www.google.com",
+                "page_link": "http://www.google.com",
+                "has_top_answer": False,
+                "categories": [category.pk]
+            },
+            {
+                "author": profile.pk,
+                "description": None,
+                "title": "Test post",
+                "repo_link": "http://www.google.com",
+                "page_link": "http://www.google.com",
+                "has_top_answer": False,
+                "categories": [category.pk]
+            },
+            {
+                "author": profile.pk,
+                "description": "Test post description",
+                "title": None,
+                "repo_link": "http://www.google.com",
+                "page_link": "http://www.google.com",
+                "has_top_answer": False,
+                "categories": [category.pk]
+            },
+            {
+                "author": profile.pk,
+                "description": "Test post description",
+                "title": "Test post description",
+                "repo_link": None,
+                "page_link": "http://www.google.com",
+                "has_top_answer": False,
+                "categories": []
+            },
+            {
+                "author": profile.pk,
+                "description": "Test post description",
+                "title": None,
+                "repo_link": "http://www.google.com",
+                "page_link": "http://www.google.com",
+                "has_top_answer": None,
+                "categories": []
+            }
+        ]
     
     def test_create_valid_post(self):
         response = client.post(
@@ -92,3 +138,12 @@ class CreateNewPostTest(APITestCase):
             data=json.dumps(self.valid_payload)
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_invalid_post(self):
+        for payload in self.invalid_payloads:
+            response = client.post(
+                '/api/posts/',
+                content_type='application/json',
+                data=json.dumps(payload)
+            )
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
