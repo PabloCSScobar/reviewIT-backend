@@ -144,3 +144,27 @@ class CreateNewPostTest(APITestCase):
                 data=json.dumps(payload)
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class DeletePostTest(APITestCase):
+    def setUp(self):
+        user = User.objects.create(username='test', password='123456')
+        profile = Profile.objects.create(user=user, reputation=100)
+        categories = Category.objects.all()
+        self.post = Post.objects.create(
+            author=profile,
+            description='Test post description',
+            title='Test post',
+            repo_link='http://www.google.com',
+            page_link='http://www.google.com',
+            has_top_answer=False)
+        self.post.categories.set(categories)
+
+    def test_delete_valid_post(self):
+        response = client.delete(f'/api/posts/{self.post.pk}/')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+    def test_delete_invalid_post(self):
+        response = client.delete(f'/api/posts/{10000000}/')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
