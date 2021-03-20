@@ -24,9 +24,11 @@ class PostView(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list':
             return PostSerializer
+        if self.action =='create':
+            return PostCreateSerializer
         else:
             return PostDetailSerializer
-            
+
     #customowa funkcja retrieve zwiększająca ilość wizyt posta po każdym zapytaniu
     def retrieve(self, request, *args, **kwargs):
         post = self.get_object()
