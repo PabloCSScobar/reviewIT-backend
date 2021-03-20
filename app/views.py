@@ -11,7 +11,11 @@ class CategoryView(viewsets.ModelViewSet):
 
 class AnswerView(viewsets.ModelViewSet):
     queryset = Answer.objects.all()
-    serializer_class = AnswerSerializer
+    def get_serializer_class(self):
+        if self.action =='create' or self.action == 'update':
+            return AnswerWriteSerializer
+        else:
+            return AnswerSerializer
 
 
 class PostDetailView(viewsets.ModelViewSet):

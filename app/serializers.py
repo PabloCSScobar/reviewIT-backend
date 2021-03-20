@@ -33,7 +33,14 @@ class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = ['id', 'author', 'created', 'is_top_answer', 'description', 'rank', 'reviewed_categories']
-
+ 
+#serializer dla POST/PUT
+class AnswerWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ['id', 'author', 'is_top_answer', 'description', 'post']
+        read_only_fields = ['post']
+ 
 
 class LastActivitySerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='author.user.username')
