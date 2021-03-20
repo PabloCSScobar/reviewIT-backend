@@ -54,7 +54,7 @@ class GetSinglePostTest(APITestCase):
         self.post.categories.set(categories)
     
     def test_get_valid_single_post(self):
-        response = client.get(f'/api/posts/{self.post.pk}', follow=True)
+        response = client.get(f'/api/posts/{self.post.pk}/')
         post = Post.objects.get(pk=self.post.pk)
         serializer = PostDetailSerializer(post)
         self.assertEqual(response.data, serializer.data)
@@ -62,7 +62,7 @@ class GetSinglePostTest(APITestCase):
 
 
     def test_get_invalid_single_post(self):
-        response = client.get(f'/api/posts/{1000000}', follow=True)
+        response = client.get(f'/api/posts/{1000000}/')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
