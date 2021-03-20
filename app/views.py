@@ -24,8 +24,8 @@ class PostView(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list':
             return PostSerializer
-        if self.action =='create':
-            return PostCreateSerializer
+        if self.action =='create' or self.action == 'update':
+            return PostWriteSerializer
         else:
             return PostDetailSerializer
 

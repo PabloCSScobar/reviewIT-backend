@@ -53,7 +53,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
         fields = ['id', 'visits', 'author', 'created', 'description', 'title', 'repo_link', 'page_link', 'has_top_answer', 'categories', 'answers']
 
 
-class PostCreateSerializer(serializers.ModelSerializer):
+class PostWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'author', 'created', 'description', 'title', 'repo_link', 'page_link', 'has_top_answer', 'categories']
