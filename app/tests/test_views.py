@@ -80,7 +80,6 @@ class CreateNewPostTest(APITestCase):
             "title": "Test post",
             "repo_link": "http://www.google.com",
             "page_link": "http://www.google.com",
-            "has_top_answer": False,
             "categories": [category.pk]
         }
         self.invalid_payloads = [
@@ -90,7 +89,6 @@ class CreateNewPostTest(APITestCase):
                 "title": "Test post",
                 "repo_link": "http://www.google.com",
                 "page_link": "http://www.google.com",
-                "has_top_answer": False,
                 "categories": [category.pk]
             },
             {
@@ -99,7 +97,6 @@ class CreateNewPostTest(APITestCase):
                 "title": "Test post",
                 "repo_link": "http://www.google.com",
                 "page_link": "http://www.google.com",
-                "has_top_answer": False,
                 "categories": [category.pk]
             },
             {
@@ -108,7 +105,6 @@ class CreateNewPostTest(APITestCase):
                 "title": None,
                 "repo_link": "http://www.google.com",
                 "page_link": "http://www.google.com",
-                "has_top_answer": False,
                 "categories": [category.pk]
             },
             {
@@ -117,7 +113,6 @@ class CreateNewPostTest(APITestCase):
                 "title": "Test post description",
                 "repo_link": None,
                 "page_link": "http://www.google.com",
-                "has_top_answer": False,
                 "categories": []
             },
             {
@@ -126,7 +121,6 @@ class CreateNewPostTest(APITestCase):
                 "title": None,
                 "repo_link": "http://www.google.com",
                 "page_link": "http://www.google.com",
-                "has_top_answer": None,
                 "categories": []
             }
         ]
@@ -159,8 +153,8 @@ class DeletePostTest(APITestCase):
             description='Test post description',
             title='Test post',
             repo_link='http://www.google.com',
-            page_link='http://www.google.com',
-            has_top_answer=False)
+            page_link='http://www.google.com'
+        )
         self.post.categories.set(categories)
 
     def test_valid_delete_post(self):
@@ -185,8 +179,8 @@ class UpdatePostTest(APITestCase):
             description='Test post description',
             title='Test post',
             repo_link='http://www.google.com',
-            page_link='http://www.google.com',
-            has_top_answer=False)
+            page_link='http://www.google.com'
+        )
 
         self.valid_payload = {
             "author": profile.pk,
@@ -194,7 +188,6 @@ class UpdatePostTest(APITestCase):
             "title": "Test2 post",
             "repo_link": "http://www.google.com/test",
             "page_link": "http://www.google.com/test",
-            "has_top_answer": True,
             "categories": [category.pk]
         }
         self.invalid_payload = {
@@ -203,7 +196,6 @@ class UpdatePostTest(APITestCase):
             "title": "Test2 post",
             "repo_link": "http://www.google.com/test",
             "page_link": "",
-            "has_top_answer": None,
             "categories": [category.pk]
         }
 
@@ -247,8 +239,7 @@ class CreateAnswerTest(APITestCase):
             description='Test post description',
             title='Test post',
             repo_link='http://www.google.com',
-            page_link='http://www.google.com',
-            has_top_answer=False
+            page_link='http://www.google.com'
         )
         self.valid_payload = {
             "post": self.post.pk,
@@ -311,8 +302,7 @@ class DeleteAnswerTest(APITestCase):
             description='Test post description',
             title='Test post',
             repo_link='http://www.google.com',
-            page_link='http://www.google.com',
-            has_top_answer=False
+            page_link='http://www.google.com'
         )
         self.answer = Answer.objects.create(author=profile, description="test Answer", post=self.post) 
 
