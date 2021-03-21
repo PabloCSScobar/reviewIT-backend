@@ -30,6 +30,7 @@ class AnswerCategorySerializer(serializers.ModelSerializer):
 class AnswerSerializer(serializers.ModelSerializer):
     reviewed_categories = AnswerCategorySerializer(many=True, read_only=True) 
     rank = serializers.FloatField(source='get_answer_rank')
+    author = ProfileSerializer(many=False)
     class Meta:
         model = Answer
         fields = ['id', 'author', 'created', 'is_top_answer', 'description', 'rank', 'reviewed_categories']
