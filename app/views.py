@@ -4,6 +4,9 @@ from .models import *
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
+
+
 
 class CategoryView(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -24,8 +27,21 @@ class PostDetailView(viewsets.ModelViewSet):
     serializer_class = PostDetailSerializer
 
 
+class PostPagination(PageNumberPagination):
+    page_size = 10
+
+    def get_paginated_response(self, data):
+        return Response({
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,
+            'results': data
+        })
+
 class PostView(viewsets.ModelViewSet):
     queryset = Post.objects.all()
+    pagination_class = PostPagination
     def get_serializer_class(self):
         if self.action == 'list':
             return PostSerializer
