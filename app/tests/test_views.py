@@ -3,10 +3,13 @@ from rest_framework import status
 from django.test import TestCase
 from rest_framework.test import APIClient, APITestCase
 from django.urls import reverse
-from ..models import Post, Profile, User, Category
-from ..serializers import PostSerializer, PostDetailSerializer
+from ..models import Post, Profile, User, Category, Answer
+from ..serializers import PostSerializer, PostDetailSerializer, PostWriteSerializer
 
 client = APIClient()
+
+
+####        POST        ###
 
 class GetAllPostsTest(APITestCase):
 
@@ -211,7 +214,9 @@ class UpdatePostTest(APITestCase):
             data=json.dumps(self.valid_payload),
             content_type='application/json'
         )
+        serializer = PostWriteSerializer(Post.objects.get(pk=self.post.pk))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
 
         
     def test_invalid_update_post(self):
@@ -227,4 +232,96 @@ class UpdatePostTest(APITestCase):
             data=json.dumps(self.invalid_payload),
             content_type='application/json'
         )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        
+
+###         ANSWER          ###
+class CreateAnswerTest(APITestCase):
+    def setUp(self):
+        user = User.objects.create(username='test', password='123456')
+        profile = Profile.objects.create(user=user, reputation=100)
+        categories = Category.objects.all()
+        category = Category.objects.create(name="SEO")
+        self.post = Post.objects.create(
+            author=profile,
+            description='Test post description',
+            title='Test post',
+            repo_link='http://www.google.com',
+            page_link='http://www.google.com',
+            has_top_answer=False
+        )
+        self.valid_payload = {
+            "post": self.post.pk,
+            "author": profile.pk,
+            "description": "test description"
+        }
+        self.invalid_payload = {
+            "post": self.post.pk,
+            "author": profile.pk,
+            "description": None
+        }
+        self.invalid_payload_top_answer_true = {
+            "post": self.post.pk,
+            "author": profile.pk,
+            "is_top_answer": True,
+            "description": "test"
+        }
+
+
+    def test_valid_create_answer(self):
+        response = client.post(
+            '/api/answers/',
+            content_type='application/json',
+            data=json.dumps(self.valid_payload)
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+    def test_invalid_create_answer(self):
+        response = client.post(
+            '/api/answers/',
+            content_type='application/json',
+            data=json.dumps(self.invalid_payload)
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+    def test_create_top_answer_true(self):
+        response = client.post(
+            '/api/answers/',
+            content_type='application/json',
+            data=json.dumps(self.invalid_payload_top_answer_true)
+        )
+        answer_id = response.data['id']
+        answer = Answer.objects.get(id=answer_id)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        #przy tworzeniu odpowiedzi is_top_answer musi mieć wartość False
+        self.assertEqual(answer.is_top_answer, False)
+
+
+
+class DeleteAnswerTest(APITestCase):
+    def setUp(self):
+        user = User.objects.create(username='test', password='123456')
+        profile = Profile.objects.create(user=user, reputation=100)
+        categories = Category.objects.all()
+        category = Category.objects.create(name="SEO")
+        self.post = Post.objects.create(
+            author=profile,
+            description='Test post description',
+            title='Test post',
+            repo_link='http://www.google.com',
+            page_link='http://www.google.com',
+            has_top_answer=False
+        )
+        self.answer = Answer.objects.create(author=profile, description="test Answer", post=self.post) 
+
+
+    def test_valid_delete_answer(self):
+        response = client.delete(f'/api/answers/{self.answer.pk}/')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+    def test_invalid_delete_answer(self):
+        response = client.delete(f'/api/answers/{10000000}/')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
