@@ -33,7 +33,7 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     repo_link = models.CharField(max_length=255)
     page_link = models.CharField(max_length=255)
-    has_top_answer = models.BooleanField(default=False)
+    has_top_answer = models.BooleanField(default=False) #TODO function
     categories = models.ManyToManyField(Category)
 
     #zwraca liczbe udzielonych odzpowiedzi w danym poście
@@ -63,7 +63,7 @@ class Answer(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="answers")
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
-    is_top_answer =  models.BooleanField()
+    is_top_answer =  models.BooleanField(default=False)
     description = models.TextField()
 
 
