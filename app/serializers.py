@@ -55,9 +55,10 @@ class PostDetailSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True)
     answers = AnswerSerializer(many=True)
     author = ProfileSerializer(many=False)
+    rank = serializers.FloatField(source='get_post_rank')
     class Meta:
         model = Post
-        fields = ['id', 'visits', 'author', 'created', 'description', 'title', 'repo_link', 'page_link', 'has_top_answer', 'categories', 'answers']
+        fields = ['id', 'visits', 'rank', 'author', 'created', 'description', 'title', 'repo_link', 'page_link', 'has_top_answer', 'categories', 'answers']
 
 
 class PostWriteSerializer(serializers.ModelSerializer):
@@ -68,10 +69,11 @@ class PostWriteSerializer(serializers.ModelSerializer):
 #obiekt posta bez dodatkowych informacji
 class PostSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True)
-    answers = serializers.IntegerField(source="get_answer_count")
+    number_of_answers = serializers.IntegerField(source="get_answer_count")
     last_activity = LastActivitySerializer(source="get_last_activity")
     author = ProfileSerializer(many=False)
+    rank = serializers.FloatField(source='get_post_rank')
     class Meta:
         model = Post
-        fields = ['id', 'visits', 'last_activity', 'author', 'created', 'description', 'title', 'repo_link', 'page_link', 'has_top_answer', 'categories', 'answers']
+        fields = ['id', 'visits', 'rank', 'last_activity', 'author', 'created', 'description', 'title', 'repo_link', 'page_link', 'has_top_answer', 'categories', 'number_of_answers']
 

@@ -57,6 +57,11 @@ class Post(models.Model):
     def get_categories_rank(self):
         categories = self.reviewed_categories.values('category').annotate(avg=Avg('rank')).order_by('-avg')
 
+    #zwraca ocene główną posta
+    def get_post_rank(self):
+        return self.reviewed_categories.all().aggregate(Avg('rank'))['rank__avg']
+
+
     def __str__(self):
         return self.title
     
