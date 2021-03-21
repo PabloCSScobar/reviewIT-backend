@@ -33,8 +33,13 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     repo_link = models.CharField(max_length=255)
     page_link = models.CharField(max_length=255)
-    has_top_answer = models.BooleanField(default=False) #TODO function
     categories = models.ManyToManyField(Category)
+
+
+    #zwraca True jeśli jedna z odpowiedzi przypisana do posta ma flagę is_top_answer=True
+    @property
+    def has_top_answer(self):
+        return self.answers.filter(is_top_answer=True).exists()
 
     #zwraca liczbe udzielonych odzpowiedzi w danym poście
     def get_answer_count(self):
