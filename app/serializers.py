@@ -38,8 +38,8 @@ class AnswerSerializer(serializers.ModelSerializer):
 class AnswerWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
-        fields = ['id', 'author', 'is_top_answer', 'description', 'post']
-        read_only_fields = ['post']
+        fields = ['id', 'author', 'description', 'post']
+        read_only_fields = ['is_top_answer']
  
 
 class LastActivitySerializer(serializers.ModelSerializer):
