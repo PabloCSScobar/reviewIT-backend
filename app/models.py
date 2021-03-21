@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Avg
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 #profil uzytkownika bazujacy da wbudowanym modelu User
 class Profile(models.Model):
@@ -90,7 +91,7 @@ class AnswerCategory(models.Model):
         verbose_name_plural = "Answer Categories"
 
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="reviewed_categories")
-    rank = models.IntegerField()
+    rank = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)])
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name="reviewed_categories")
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="reviewed_categories")
 
