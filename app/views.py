@@ -3,6 +3,7 @@ from .serializers import *
 from .models import *
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 class CategoryView(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -40,3 +41,10 @@ class PostView(viewsets.ModelViewSet):
         post.save()
         serializer = self.get_serializer(post)
         return Response(serializer.data)
+
+    #zwwraca wszystkie odpowiedzi udzielone w danym poście
+    @action(detail=True, methods=['GET',])
+    def answers(self, request, pk = None):
+        post = self.get_object()
+        answers = post.answers.all()
+        return Response(AnswerSerializer(answers, many=True).data)
