@@ -38,7 +38,6 @@ class Post(models.Model):
 
 
     #zwraca True jeśli jedna z odpowiedzi przypisana do posta ma flagę is_top_answer=True
-    @property
     def has_top_answer(self):
         return self.answers.filter(is_top_answer=True).exists()
 
