@@ -65,6 +65,7 @@ class PostView(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Post.objects.all()
         ordering = self.request.query_params.get('ordering')
+        filter_category = self.request.query_params.get('category')
         if ordering is not None:
             if ordering == 'date':
                 queryset = Post.objects.all().order_by('-created')
@@ -79,6 +80,8 @@ class PostView(viewsets.ModelViewSet):
             if ordering == 'noanswer':
                 queryset = Post.objects.filter(
                     answers__isnull=True).order_by('-created')
+        if filter_category is not None:
+            queryset = queryset.filter(categories__name=filter_category)
         return queryset
 
     def get_serializer_class(self):
