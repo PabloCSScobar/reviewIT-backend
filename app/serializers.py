@@ -36,6 +36,7 @@ class AnswerCategorySerializer(serializers.ModelSerializer):
 
 class AnswerCategoryWriteSerializer(WritableNestedModelSerializer):
     category_nodes = AnswerCategoryNodeSerializer(many=True, allow_null=True)
+    category = CategorySerializer(many=False)
 
     class Meta:
         model = AnswerCategory
@@ -61,7 +62,7 @@ class AnswerWriteSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = Answer
-        fields = ['id', 'author', 'description', 'post', 'reviewed_categories']
+        fields = ['id', 'description', 'post', 'reviewed_categories']
         read_only_fields = ['is_top_answer']
 
 
@@ -89,7 +90,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
 class PostWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'author', 'created', 'description', 'title',
+        fields = ['id', 'created', 'description', 'title',
                   'repo_link', 'page_link', 'has_top_answer', 'categories']
 
 # obiekt posta bez dodatkowych informacji

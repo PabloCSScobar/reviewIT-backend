@@ -23,6 +23,11 @@ class AnswerView(viewsets.ModelViewSet):
         else:
             return AnswerSerializer
 
+    def perform_create(self, serializer):
+        # TODO logged user
+        serializer.validated_data['author'] = Profile.objects.get(id=1)
+        return super(AnswerView, self).perform_create(serializer)
+
 
 class PostDetailView(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -99,6 +104,12 @@ class PostView(viewsets.ModelViewSet):
         post.save()
         serializer = self.get_serializer(post)
         return Response(serializer.data)
+
+    # dopisanie zalogowanego usera jako autora
+    def perform_create(self, serializer):
+        # TODO logged user
+        serializer.validated_data['author'] = Profile.objects.get(id=1)
+        return super(PostView, self).perform_create(serializer)
 
     # zwwraca wszystkie odpowiedzi udzielone w danym poście
     @action(detail=True, methods=['GET', ])
