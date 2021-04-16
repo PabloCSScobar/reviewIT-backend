@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from django.core.paginator import EmptyPage
 from django.db.models import Count, Avg
+from django.db.models import Q
 
 
 class CategoryView(viewsets.ModelViewSet):
@@ -71,6 +72,7 @@ class PostView(viewsets.ModelViewSet):
         queryset = Post.objects.all()
         ordering = self.request.query_params.get('ordering')
         filter_category = self.request.query_params.get('category')
+        search_text = self.request.query_params.get('search')
         if ordering is not None:
             if ordering == 'date':
                 queryset = Post.objects.all().order_by('-created')
@@ -87,6 +89,15 @@ class PostView(viewsets.ModelViewSet):
                     answers__isnull=True).order_by('-created')
         if filter_category is not None:
             queryset = queryset.filter(categories__name=filter_category)
+        if search_text is not None:
+            queryset = queryset.filter(
+                Q(description__icontains=search_text) |
+                Q(title__icontains=search_text) |
+                Q(repo_link__icontains=search_text) |
+                Q(page_link__icontains=search_text) |
+                Q(answers__description__icontains=search_text) |
+                Q(reviewed_categories__category_nodes__description__icontains=search_text)
+            ).distinct()
         return queryset
 
     def get_serializer_class(self):
