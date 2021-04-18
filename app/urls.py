@@ -6,6 +6,7 @@ from .views import *
 router = routers.DefaultRouter()
 router.register('categories', CategoryView)
 router.register('answers', AnswerView)
+router.register('users', UserView)
 router.register('posts', PostView, basename="post")
 
 urlpatterns = [

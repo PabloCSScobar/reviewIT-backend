@@ -8,6 +8,20 @@ from rest_framework.pagination import PageNumberPagination
 from django.core.paginator import EmptyPage
 from django.db.models import Count, Avg
 from django.db.models import Q
+from rest_framework.permissions import AllowAny, IsAdminUser
+
+
+class UserView(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = (AllowAny,)
+        else:
+            self.permission_classes = (IsAdminUser,)
+
+        return super(UserView, self).get_permissions()
 
 
 class CategoryView(viewsets.ModelViewSet):

@@ -1,6 +1,24 @@
 from rest_framework import serializers
 from .models import *
 from drf_writable_nested.serializers import WritableNestedModelSerializer
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'password',)
+        extra_kwargs = {'password': {
+            'write_only': True,
+            'required': True
+        }}
+
+    def create(self, validated_data):
+        usr = User.objects.create_user(**validated_data)
+        Token.objects.create(user=usr)
+        Profile.objects.create(user=usr, reputation=0)
+        return usr
 
 
 class ProfileSerializer(serializers.ModelSerializer):
