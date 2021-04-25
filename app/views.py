@@ -8,7 +8,9 @@ from rest_framework.pagination import PageNumberPagination
 from django.core.paginator import EmptyPage
 from django.db.models import Count, Avg
 from django.db.models import Q
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from django.shortcuts import get_object_or_404
 
 
 class UserView(viewsets.ModelViewSet):
@@ -22,6 +24,31 @@ class UserView(viewsets.ModelViewSet):
             self.permission_classes = (IsAdminUser,)
 
         return super(UserView, self).get_permissions()
+
+
+class ProfileView(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    # permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    @action(detail=False, methods=['GET'])
+    def get_profile_info(self, request):
+        print(request.user)
+        user = get_object_or_404(Profile, user__username=request.user)
+        return Response(ProfileSerializer(user).data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['GET'])
+    def answers(self, request):
+        profile = get_object_or_404(Profile, user__username=request.user)
+        answers = Answer.objects.filter(author=profile)
+        return Response(AnswerMinSerializer(answers, many=True).data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['GET'])
+    def posts(self, request):
+        profile = get_object_or_404(Profile, user__username=request.user)
+        posts = Post.objects.filter(author=profile)
+        return Response(PostMinSerializer(posts, many=True).data, status=status.HTTP_200_OK)
 
 
 class CategoryView(viewsets.ModelViewSet):
