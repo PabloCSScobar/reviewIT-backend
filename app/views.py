@@ -58,6 +58,7 @@ class CategoryView(viewsets.ModelViewSet):
 
 class AnswerView(viewsets.ModelViewSet):
     queryset = Answer.objects.all()
+    authentication_classes = (TokenAuthentication,)
 
     def get_serializer_class(self):
         if self.action == 'create' or self.action == 'update':
@@ -66,8 +67,8 @@ class AnswerView(viewsets.ModelViewSet):
             return AnswerSerializer
 
     def perform_create(self, serializer):
-        # TODO logged user
-        serializer.validated_data['author'] = Profile.objects.get(id=1)
+        user = get_object_or_404(Profile, user__username=self.request.user)
+        serializer.validated_data['author'] = user
         return super(AnswerView, self).perform_create(serializer)
 
 
@@ -108,6 +109,8 @@ class PostPagination(PageNumberPagination):
 
 class PostView(viewsets.ModelViewSet):
     pagination_class = PostPagination
+
+    authentication_classes = (TokenAuthentication,)
 
     def get_queryset(self):
         queryset = Post.objects.all()
@@ -157,13 +160,13 @@ class PostView(viewsets.ModelViewSet):
         serializer = self.get_serializer(post)
         return Response(serializer.data)
 
-    # dopisanie zalogowanego usera jako autora
     def perform_create(self, serializer):
-        # TODO logged user
-        serializer.validated_data['author'] = Profile.objects.get(id=1)
+        user = get_object_or_404(Profile, user__username=self.request.user)
+        serializer.validated_data['author'] = user
         return super(PostView, self).perform_create(serializer)
 
     # zwwraca wszystkie odpowiedzi udzielone w danym poście
+
     @action(detail=True, methods=['GET', ])
     def answers(self, request, pk=None):
         post = self.get_object()
