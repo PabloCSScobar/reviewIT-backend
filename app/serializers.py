@@ -71,9 +71,17 @@ class AnswerSerializer(serializers.ModelSerializer):
         fields = ['id', 'author', 'created', 'is_top_answer',
                   'description', 'rank', 'reviewed_categories']
 
+
+class AnswerMinSerializer(serializers.ModelSerializer):
+    rank = serializers.FloatField(source='get_answer_rank')
+
+    class Meta:
+        model = Answer
+        fields = ['id', 'created', 'is_top_answer',
+                  'description', 'rank', 'post']
+
+
 # serializer dla POST/PUT
-
-
 class AnswerWriteSerializer(WritableNestedModelSerializer):
     reviewed_categories = AnswerCategoryWriteSerializer(
         many=True, allow_null=True)
@@ -125,3 +133,12 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['id', 'visits', 'rank', 'last_activity', 'author', 'created', 'description',
                   'title', 'repo_link', 'page_link', 'has_top_answer', 'categories', 'number_of_answers']
+
+
+class PostMinSerializer(serializers.ModelSerializer):
+    rank = serializers.FloatField(source='get_post_rank')
+
+    class Meta:
+        model = Post
+        fields = ['id', 'rank', 'created', 'description',
+                  'title', 'has_top_answer']
