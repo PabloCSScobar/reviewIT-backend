@@ -3,8 +3,15 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Avg
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.conf import settings
 
-#profil uzytkownika bazujacy da wbudowanym modelu User
+
+class ReputationType:
+    POST = getattr(settings, "POST_REPUTATION", 500)
+    REVIEW = getattr(settings, "REVIEW_REPUTATION", 300)
+
+
+# profil uzytkownika bazujacy da wbudowanym modelu User
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     reputation = models.IntegerField()
@@ -13,20 +20,26 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
-    
 
-#dziedzina, w ktorej oceniany bedzie projekt
+    def updateReputation(self, reputation):
+        self.reputation += reputation
+        self.save()
+
+
+# dziedzina, w ktorej oceniany bedzie projekt
 class Category(models.Model):
     class Meta:
         verbose_name_plural = "categories"
-    
+
     name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
 
+
 class Post(models.Model):
-    author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="created_posts")
+    author = models.ForeignKey(
+        Profile, on_delete=models.CASCADE, related_name="created_posts")
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     visits = models.PositiveIntegerField(default=0)

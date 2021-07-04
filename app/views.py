@@ -11,7 +11,7 @@ from django.db.models import Q
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from django.shortcuts import get_object_or_404
-
+from .models import ReputationType
 
 class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -34,7 +34,6 @@ class ProfileView(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'])
     def get_profile_info(self, request):
-        print(request.user)
         user = get_object_or_404(Profile, user__username=request.user)
         return Response(ProfileSerializer(user).data, status=status.HTTP_200_OK)
 
@@ -48,7 +47,12 @@ class ProfileView(viewsets.ModelViewSet):
     def posts(self, request):
         profile = get_object_or_404(Profile, user__username=request.user)
         posts = Post.objects.filter(author=profile)
-        return Response(PostMinSerializer(posts, many=True).data, status=status.HTTP_200_OK)
+        return Response(PostMinSerializer(posts, many=True).data, status=status.HTTP_200_OK)\
+
+    @action(detail=False, methods=['GET'])
+    def ranking(self, request):
+        profiles = Profile.objects.order_by('-reputation')[:10]
+        return Response(ProfileSerializer(profiles, many=True).data, status=status.HTTP_200_OK)
 
 
 class CategoryView(viewsets.ModelViewSet):
@@ -69,6 +73,7 @@ class AnswerView(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = get_object_or_404(Profile, user__username=self.request.user)
         serializer.validated_data['author'] = user
+        user.updateReputation(reputation=ReputationType.REVIEW)
         return super(AnswerView, self).perform_create(serializer)
 
 
@@ -162,6 +167,7 @@ class PostView(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         user = get_object_or_404(Profile, user__username=self.request.user)
+        user.updateReputation(reputation=ReputationType.POST)
         serializer.validated_data['author'] = user
         return super(PostView, self).perform_create(serializer)
 

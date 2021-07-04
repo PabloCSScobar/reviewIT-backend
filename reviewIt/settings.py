@@ -146,3 +146,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:4200",
     "https://reviewit-pawelg.netlify.app"
 ]
+
+
+POST_REPUTATION = 500
+REVIEW_REPUTATION = 300
