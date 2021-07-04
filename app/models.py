@@ -21,7 +21,6 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
-    def updateReputation(self, reputation):
     def update_reputation(self, reputation):
         self.reputation += reputation
         self.save()
@@ -50,16 +49,15 @@ class Post(models.Model):
     page_link = models.CharField(max_length=255)
     categories = models.ManyToManyField(Category)
 
-
-    #zwraca True jeśli jedna z odpowiedzi przypisana do posta ma flagę is_top_answer=True
+    # zwraca True jeśli jedna z odpowiedzi przypisana do posta ma flagę is_top_answer=True
     def has_top_answer(self):
         return self.answers.filter(is_top_answer=True).exists()
 
-    #zwraca liczbe udzielonych odzpowiedzi w danym poście
+    # zwraca liczbe udzielonych odzpowiedzi w danym poście
     def get_answer_count(self):
         return self.answers.count()
 
-    #zwraca ostatnią dodana odpowiedz lub null jesli nie ma jeszcze żadnych odpowiedzi
+    # zwraca ostatnią dodana odpowiedz lub null jesli nie ma jeszcze żadnych odpowiedzi
     def get_last_activity(self):
         try:
             answer = self.answers.latest('id')
@@ -67,53 +65,57 @@ class Post(models.Model):
             answer = None
         return answer
 
-    #zwraca średnią ocenę dla każdej zrecenzowanej kategorii w poście
+    # zwraca średnią ocenę dla każdej zrecenzowanej kategorii w poście
     def get_categories_rank(self):
-        categories = self.reviewed_categories.values('category').annotate(avg=Avg('rank')).order_by('-avg')
+        categories = self.reviewed_categories.values(
+            'category').annotate(avg=Avg('rank')).order_by('-avg')
 
-    #zwraca ocene główną posta
+    # zwraca ocene główną posta
     def get_post_rank(self):
         return self.reviewed_categories.all().aggregate(Avg('rank'))['rank__avg']
 
-
     def __str__(self):
         return self.title
-    
 
 
-#udzielona odpowiedz
+# udzielona odpowiedz
 class Answer(models.Model):
-    author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="provided_answers")
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="answers")
+    author = models.ForeignKey(
+        Profile, on_delete=models.CASCADE, related_name="provided_answers")
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="answers")
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
-    is_top_answer =  models.BooleanField(default=False)
+    is_top_answer = models.BooleanField(default=False)
     description = models.TextField()
-
 
     def get_answer_rank(self):
         return self.reviewed_categories.all().aggregate(Avg('rank'))['rank__avg']
 
     def __str__(self):
         return str(self.id) + ' ' + self.author.user.username + ': ' + self.post.title
-    
 
-#oceniona kategoria w odpowiedzi (Answer)
+
+# oceniona kategoria w odpowiedzi (Answer)
 class AnswerCategory(models.Model):
     class Meta:
         verbose_name_plural = "Answer Categories"
 
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="reviewed_categories")
-    rank = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)])
-    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name="reviewed_categories")
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="reviewed_categories")
-
-
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, related_name="reviewed_categories")
+    rank = models.IntegerField(
+        validators=[MaxValueValidator(5), MinValueValidator(1)])
+    answer = models.ForeignKey(
+        Answer, on_delete=models.CASCADE, related_name="reviewed_categories")
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="reviewed_categories")
 
     def __str__(self):
         return self.category.name
-    
-#pojedynczy element ocenionej kategorii (wada lub zaleta)
+
+# pojedynczy element ocenionej kategorii (wada lub zaleta)
+
+
 class AnswerCategoryNode(models.Model):
     class Meta:
         verbose_name_plural = "Answer Category Nodes"
@@ -122,7 +124,8 @@ class AnswerCategoryNode(models.Model):
         ('advantage', 'Advantage'),
         ('disadvantage', 'Disadvantage')
     )
-    answer_category = models.ForeignKey(AnswerCategory, on_delete=models.CASCADE, related_name="category_nodes")
+    answer_category = models.ForeignKey(
+        AnswerCategory, on_delete=models.CASCADE, related_name="category_nodes")
     description = models.TextField()
     answer_type = models.CharField(max_length=20, choices=STATUS_CHOICES)
 
