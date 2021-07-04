@@ -22,6 +22,7 @@ class Profile(models.Model):
         return self.user.username
 
     def updateReputation(self, reputation):
+    def update_reputation(self, reputation):
         self.reputation += reputation
         self.save()
 

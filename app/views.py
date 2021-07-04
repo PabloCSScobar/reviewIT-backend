@@ -73,7 +73,7 @@ class AnswerView(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = get_object_or_404(Profile, user__username=self.request.user)
         serializer.validated_data['author'] = user
-        user.updateReputation(reputation=ReputationType.REVIEW)
+        user.update_reputation(reputation=ReputationType.REVIEW)
         return super(AnswerView, self).perform_create(serializer)
 
 
@@ -167,7 +167,7 @@ class PostView(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         user = get_object_or_404(Profile, user__username=self.request.user)
-        user.updateReputation(reputation=ReputationType.POST)
+        user.update_reputation(reputation=ReputationType.POST)
         serializer.validated_data['author'] = user
         return super(PostView, self).perform_create(serializer)
 
