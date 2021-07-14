@@ -65,8 +65,10 @@ class AnswerView(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
 
     def get_serializer_class(self):
-        if self.action == 'create' or self.action == 'update':
-            return AnswerWriteSerializer
+        if self.action == 'create':
+            return AnswerPostSerializer
+        if self.action == 'update':
+            return AnswerPutSerializer
         else:
             return AnswerSerializer
 
@@ -75,6 +77,15 @@ class AnswerView(viewsets.ModelViewSet):
         serializer.validated_data['author'] = user
         user.update_reputation(reputation=ReputationType.REVIEW)
         return super(AnswerView, self).perform_create(serializer)
+
+    @action(detail=True, methods=['PUT'])
+    def mark_as_top(self, request, pk=None):
+        answer = get_object_or_404(Answer, pk=pk)
+        answer.post.answers.update(is_top_answer=False)
+        answer.is_top_answer = True
+        answer.save()
+        serializer = self.get_serializer(answer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class PostDetailView(viewsets.ModelViewSet):

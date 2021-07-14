@@ -81,8 +81,8 @@ class AnswerMinSerializer(serializers.ModelSerializer):
                   'description', 'rank', 'post']
 
 
-# serializer dla POST/PUT
-class AnswerWriteSerializer(WritableNestedModelSerializer):
+# serializer dla POST
+class AnswerPostSerializer(WritableNestedModelSerializer):
     reviewed_categories = AnswerCategoryWriteSerializer(
         many=True, allow_null=True)
 
@@ -90,6 +90,16 @@ class AnswerWriteSerializer(WritableNestedModelSerializer):
         model = Answer
         fields = ['id', 'description', 'post', 'reviewed_categories']
         read_only_fields = ['is_top_answer']
+
+
+# serializer dla PUT
+class AnswerPutSerializer(WritableNestedModelSerializer):
+    reviewed_categories = AnswerCategoryWriteSerializer(
+        many=True, allow_null=True)
+
+    class Meta:
+        model = Answer
+        fields = ['id', 'description', 'post', 'reviewed_categories', 'is_top_answer']
 
 
 class LastActivitySerializer(serializers.ModelSerializer):
