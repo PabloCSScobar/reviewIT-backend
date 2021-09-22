@@ -79,10 +79,12 @@ class AnswerView(viewsets.ModelViewSet):
         return super(AnswerView, self).perform_create(serializer)
 
     @action(detail=True, methods=['PUT'])
-    def mark_as_top(self, request, pk=None):
+    def change_answer_status(self, request, pk=None):
         answer = get_object_or_404(Answer, pk=pk)
         answer.post.answers.update(is_top_answer=False)
-        answer.is_top_answer = True
+
+        answer.is_top_answer = request.data.get('is_top_answer', False)
+
         answer.save()
         serializer = self.get_serializer(answer)
         return Response(serializer.data, status=status.HTTP_200_OK)
