@@ -6,3 +6,4 @@ app/tests/__pycache__/
 env/
 .idea/
 venv/
+staticfiles/
