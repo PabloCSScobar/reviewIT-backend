@@ -28,7 +28,7 @@ SECRET_KEY = '6eh1btrfblo)3=02g_!jcn^qc-ae&p*bw1rpihe69k!o!+hk(-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['review-it-pg.herokuapp.com']
+ALLOWED_HOSTS = ['review-it-pg.herokuapp.com', 'backend', 'localhost']
 
 
 # Application definition
@@ -86,15 +86,19 @@ WSGI_APPLICATION = 'reviewIt.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'reviewit',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': '',
     }
 }
 
 # DATABASE_URL = os.environ['HEROKU_POSTGRESQL_GREEN_URL']
 # conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
-DATABASES['default'].update(db_from_env)
+# db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
+# DATABASES['default'].update(db_from_env)
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -132,7 +136,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
@@ -144,9 +148,9 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost",
+    "https://reviewit-pawelg.netlify.app",
     "http://localhost:4200",
-    "http://127.0.0.1:4200",
-    "https://reviewit-pawelg.netlify.app"
 ]
 
 
