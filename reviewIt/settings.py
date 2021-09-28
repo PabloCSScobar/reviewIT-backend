@@ -95,7 +95,7 @@ DATABASES = {
     }
 }
 
-DATABASE_URL = os.environ['HEROKU_POSTGRESQL_GREEN_URL']
+DATABASE_URL = os.environ['DATABASE_URL']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
 DATABASES['default'].update(db_from_env)
